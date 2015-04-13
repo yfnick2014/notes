@@ -17,14 +17,14 @@ All header files should have `#define` guards to prevent multiple inclusion. The
 
 eg: the file `foo/src/bar/baz.h` in project foo should have the following guard:
 
-``
+```
 #ifndef FOO_BAR_BAZ_H_
 #define FOO_BAR_BAZ_H_
 
 ...
 
 #endif // FOO_BAR_BAZ_H_
-``
+```
 
 ###Forward Declarations
 You may forward declare ordinary class in order to avoid unnecessary `#includes`.
@@ -98,7 +98,7 @@ You should include all the headers that defines the symbols you rely upon (excep
 
 Sometimes, system-specific code needs conditional includes. Such code can put conditional includes after other includes. Of course, keep your system-specific code small and localized. Example:
 
-``
+```
 #include "foo/public/fooserver.h"
 
 #include "base/port.h" // For LANG_CXX11.
@@ -106,4 +106,4 @@ Sometimes, system-specific code needs conditional includes. Such code can put co
 #ifdef LANG_CXX11
 #include <initializer_list>
 #endif // LANG_CXX11
-``
+```
