@@ -1,2 +1,2 @@
-# notes
-extra notes
+# Extra Notes
+- [Google C++ Style Guide](content/gcppsg.md)
