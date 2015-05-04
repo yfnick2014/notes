@@ -17,7 +17,7 @@ Bjarne Stroustrup, 编著
 在提高C++程序设计的过程中，日益重要的一点是将重要的知识同华而不实的东西分离开来，然后找出更深入、更全面的内容，
 从而获得进一步的提高。“深入C++”丛书所展示的C++程序设计的工具、概念、技巧和新的方法，将为你提供一个重要的开端。
 
-####丛书数目
+####丛书书目
 Accelerated C++: Practical Programming by Example, Andrew Koenig and Barbara E. Moo
 
 The Boost Graph Library: User guide and Reference Manual, Jeremy G. Siek, Lie-Quan Lee, and Andrew Lumsdaine
