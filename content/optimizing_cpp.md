@@ -26,7 +26,6 @@ of how compiler work. The C++ language is chosen as the basis for this manual fo
 
 
 This is the first in a series of five manuals(available from [agner](http://www.agner.org/optimize/)):
-
 - Optimizing software in C++: An optimization guide for Windows, Linux and Mac platforms.
 - Optimizing subroutines in assembly language: An optimization guide for x86 platforms.
 - The microarchitecture of Intel, AMD and VIA CPUs: An optimization guide for assembly programmers and compiler makers.
