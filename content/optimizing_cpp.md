@@ -1,0 +1,21 @@
+##Contents
+- 1. Introduction
+- 2. Choosing the optimal platform
+- 3. Finding the biggest time consumers
+- 4. Performance and usability
+- 5. Choosing the optimal algorithm
+- 6. Developing process
+- 7. The efficiency of different C++ constructs
+- 8. Optimizations in the compiler
+- 9. Optimizing memory access
+- 10. Multithreading
+- 11. Out of order execution
+- 12. Using vector operations
+- 13. Making critical code in multiple versions for different instruction sets
+- 14. Specific optimization topics
+- 15. Metaprogramming
+- 16. Testing speed
+- 17. Optimization in embedded systems
+- 18. Overview of compiler options
+- 19. Literature
+
