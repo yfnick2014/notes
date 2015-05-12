@@ -1,4 +1,4 @@
-##Contents
+## Menu
 - 1. Introduction
 - 2. Choosing the optimal platform
 - 3. Finding the biggest time consumers
