@@ -284,3 +284,5 @@ struct event_base *event_init(void);
 ```
 
 This function worked like `event_base_new()`, and set the current base to the allocated base. There was no other way to change the current base.
+
+#Running with an event loop
