@@ -257,3 +257,30 @@ void event_base_free(struct event_base *base);
 Note that this function does not deallocate any of the events that are currently associated with the `event_base`, or close any of their sockets, or free any of their pointers.
 
 ##Setting priorities on an `event_base`
+Libevent supports setting multiple priorities on an event. By default, though, an `event_base` supports only a single priority level. You can set the number of priorities on an `event_base` by calling `event_base_priority_init()`.
+
+```C
+int event_base_priority_init(struct event_base *base, int n_priorities);
+```
+
+To find the number of priorities currently supported by a base, you can call `event_base_getnpriorities()`.
+
+```C
+int event_base_get_npriorities(struct event_base *base);
+```
+
+##Reinitializing an `event_base` after `fork()`
+Not all event backends persist cleanly after a call to `fork()`. Thus, if your program uses `fork()` or a related system call in order to start a new process, and you want to continue using an `event_base` after you have forked, you may need to reinitialize it.
+
+```C
+int event_reinit(struct event_base *base);
+```
+
+##Obsolete `event_base` functions
+Older versions of Libevent relied pretty heavily on the idea of a "current" `event_base`. The "current" `event_base` was a global setting shared across all threads. If you forgot to specify which `event_base` you wanted, you got the current one. Since event_bases weren't threadsafe, this could get pretty error-prone.
+
+```C
+struct event_base *event_init(void);
+```
+
+This function worked like `event_base_new()`, and set the current base to the allocated base. There was no other way to change the current base.
