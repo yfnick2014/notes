@@ -188,4 +188,72 @@ If you want more control over what kind of `event_base` you get, you need to use
 struct event_config *event_config_new(void);
 struct event_base *event_base_new_with_config(const struct event_config *cfg);
 void event_config_free(struct event_config *cfg);
+
+int event_config_avoid_method(struct event_config *cfg, const char *method);
+
+enum event_method_feature {
+	EV_FEATURE_ET = 0x01,
+	EV_FEATURE_O1 = 0x02,
+	EV_FEATURE_FDS = 0x04,
+};
+
+int event_config_require_features(struct event_config *cfg,
+	enum event_method_feature feature);
+
+enum event_base_config_flag {
+	EVENT_BASE_FLAG_NOLOCK = 0x01,
+	EVENT_BASE_FLAG_IGNORE_ENV = 0x02,
+	EVENT_BASE_FLAG_STARTUP_IOCP = 0x04,
+	EVENT_BASE_FLAG_NO_CACHE_TIME = 0x08,
+	EVENT_BASE_FLAG_EPOLL_USE_CHAGNELIST = 0x10,
+	EVENT_BASE_FLAG_PRECISE_TIMER = 0x20
+};
+
+int event_config_set_flag(struct event_config *cfg,
+	enum event_base_config_flag flag);
 ```
+
+To allocate an `event_base` with these features, you call `event_config_new()` to allocate a new `event_config`. Then, you call other functions on the `event_config` to tell it about your needs. Finally, you call `event_base_new_with_config()` to get a new `event_base`. When you are done, you can free the `event_config` with `event_config_free()`.
+
+Calling `event_config_avoid_method` tells Libevent to avoid a specific available backend by name. Calling `event_config_require_feature()` tells Libevent not to use any backend that cannot supply all of a set of features. Calling `event_config_set_flag()` tells Libevent to set one or more of the run-time flags when constructing the event base.
+
+```C
+int event_config_set_num_cpus_hint(struct event_config *cfg, int cpus);
+```
+
+This function is currently only useful with Windows when using IOCP. Calling it tells the `event_config` that the `event_base` it generates should try to make good use of a given number of CPUs when multithreading.
+
+```C
+int event_config_set_max_dispatch_interval(struct event_config *cfg,
+	const struct timeval *max_interval, int max_callbacks,
+	int min_priority);
+```
+
+This function prevents priority inversion by limiting how many low-priority event callbacks can be invoked before checking for more high-priority events. If `max_interval` is non-null, the event loop checks the time after each callback, and re-scans for high-priority events if `max_interval` has passed. If `max_callbacks` is nonnegative, the event loop also checks for more events after `max_callbacks` callbacks have been invoked. These rules apply to any event of `min_priority` or higher.
+
+##Examining an `event_base`' s backend method
+Sometimes you want to see which features are actually available in an `event_base`, or which method it's using.
+
+```C
+const char **event_get_supported_methods(void);
+```
+
+The `event_get_supported_methods()` function returns a pointer to an array of the names of the methods supported in this version of Libevent. The last element in the array is NULL.
+
+```C
+const char *event_base_get_method(const struct event_base *base);
+enum event_method_feature event_base_get_features(const struct event_base *base);
+```
+
+The `event_base_get_method()` call returns the name of the actual method in use by an `event_base`. The `event_base_get_features()` call returns a bitmask of the features that it supports.
+
+##Deallocating an `event_base`
+When you are finished with an `event_base`, you can deallocate it with `event_base_free()`.
+
+```C
+void event_base_free(struct event_base *base);
+```
+
+Note that this function does not deallocate any of the events that are currently associated with the `event_base`, or close any of their sockets, or free any of their pointers.
+
+##Setting priorities on an `event_base`
