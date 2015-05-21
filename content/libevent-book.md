@@ -6,7 +6,7 @@
 
 >To get the source for the latest version of this document, install git and run "git clone git://github.com/nmathewson/libevent-book.git"
 
-#Preliminaries
+#0. Preliminaries
 Libevent is a library for writing fast portable nonblocking IO. Its design goals are:
 
 - **Portability** A program written using Libevent should work across all the platform Libevent supports. Even when there is no really good way to do nonblocking IO, Libevent should support the so-so ways, so that your program can run in restricted environments.
@@ -35,7 +35,7 @@ The following libraries are installed only on some platforms:
 - **libevent_pthreads** This library adds threading and locking implementations based on the pthreads portable threading library. It is separated from libevent_core so that you don't need to link against pthreads to use Libevent unless you are actually using Libevent in a multithreaded way.
 - **libevent_openssl** This library provides support for encrypted communications using bufferevents and the OpenSSL library. It is separated from libevent_core so that you don't need to link against OpenSSL to use Libevent unless you are actually using encrypted connections.
 
-#Setting up the Libevent library
+#1. Setting up the Libevent library
 Libevent has a few global settings that are shared across the entire process. These affect the entire library.
 
 ## Log messages in Libevent
@@ -157,7 +157,7 @@ Even when you've freed all the objects that you allocated with Libevent, there w
 void libevent_global_shutdown(void);
 ```
 
-#Getting an event base
+#2. Getting an event base
 Before you can use any interesting Libevent function, you need to allocate one or more `event_base` structures. Each `event_base` structure holds a set of events and can poll to determine which events are active.
 
 If an `event_base` is set up to use locking, it is safe to access it between multiple threads. Its loop can only be run in a single thread, however. If you want to have multiple threads polling for IO, you need to have an `event_base` for each thread.
