@@ -286,3 +286,17 @@ struct event_base *event_init(void);
 This function worked like `event_base_new()`, and set the current base to the allocated base. There was no other way to change the current base.
 
 #Running with an event loop
+##Running the loop
+Once you have an event_base with some events registered(see the next section about how to create and register events), you will want Libevent to wait for events and alert you about them.
+
+```C
+#define EVLOOP_ONCE 0x01
+#define EVLOOP_NONBLOCK 0x02
+#define EVLOOP_NO_EXIT_ON_EMPTY 0x04
+
+int event_base_loop(struct event_base *base, int flags);
+```
+
+By default, the `event_base_loop()` function runs an event_base until there are no more events registered in it. To run the loop, it repeatedly checks whether any of the registered events has triggered(for example, if a read event's file descriptor is ready to read, or if a timeout event's timeout is ready to expire). Once this happens, it marks all triggered events as "active", and starts to run them.
+
+You can change the behavior of `event_base_loop()` by setting one or more flags in its flags argument. If `EVLOOP_ONCE` is set, then the loop will wait until some events become active, then run active events until there are no more to run, then return. If `EVLOOP_NONBLOCK` is set, then the loop will not wait for events to trigger: it will only check whether any events are ready to trigger immediately, and run their callbacks if so.
