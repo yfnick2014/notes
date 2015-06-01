@@ -348,3 +348,45 @@ int event_base_loopbreak(struct event_base *base);
 The `event_base_loopexit()` function tells an event_base to stop looping after a given time has elapsed. If the tv argument is NULL, the event_base stops looping without a delay. If the event_base is currently running callbacks for any active events, it will continue running them, and not exit until they have all been run.
 
 The `event_base_loopbreak()` function tells the event_base to exit its loop immediately. It differs from `event_base_loopexit(base, NULL)` in that if the event_base is currently running callbacks for any active events, it will exit immediately after finishing the one it's currently processing.
+
+Note also that `event_base_loopexit(base,NULL)` and `event_base_loopbreak(base)` act differently when no event loop is running: loopexit schedules the next instance of the event loop to stop right after the next round of callbacks are run(as if it had been invoked with EVLOOP_ONCE) whereas loopbreak only stops a currently running loop, and has no effect if the event loop isn't running.
+
+Both of these methods return 0 on success and -1 on failure.
+
+```C
+/* Shut down immediately */
+#include <event2/event.h>
+
+void cb(int sock, short what, void *arg)
+{
+	struct event_base *base = arg;
+	event_base_loopbreak(base);
+}
+
+void main_loop(struct event_base *base, evutil_socket_t watchdog_fd)
+{
+	struct event *watchdog_event;
+	
+	watchdog_event = event_new(base, watchdog_fd, EV_READ, cb, base);
+	event_add(watchdog_event, NULL);
+	event_base_dispatch(base);
+}
+
+/* Run an event loop for 10 seconds, then exit. */
+#include <event2/event.h>
+
+void run_base_with_ticks(struct event_base *base)
+{
+	struct timeval ten_sec;
+	
+	ten_sec.tv_sec = 10;
+	ten_sec.tv_usec = 0;
+	
+	while (1) {
+		event_base_loopexit(base, &ten_sec);
+		
+		event_base_dispatch(base);
+		puts("Tick");
+	}
+}
+```
