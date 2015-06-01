@@ -300,4 +300,30 @@ int event_base_loop(struct event_base *base, int flags);
 By default, the `event_base_loop()` function runs an event_base until there are no more events registered in it. To run the loop, it repeatedly checks whether any of the registered events has triggered(for example, if a read event's file descriptor is ready to read, or if a timeout event's timeout is ready to expire). Once this happens, it marks all triggered events as "active", and starts to run them.
 
 You can change the behavior of `event_base_loop()` by setting one or more flags in its flags argument. If `EVLOOP_ONCE` is set, then the loop will wait until some events become active, then run active events until there are no more to run, then return. If `EVLOOP_NONBLOCK` is set, then the loop will not wait for events to trigger: it will only check whether any events are ready to trigger immediately, and run their callbacks if so.
+
 Ordinarily, the loop will exit as soon as it has no pending or active events. You can override this behavior by passing the `EVLOOP_NO_EXIT_ON_EMPTY` flag--for example, if you're going to be adding events from some other thread. If you do set `EVLOOP_NO_EXIT_ON_EMPTY`, the loop will keep running until somebody calls `event_base_loopbreak()`, or calls `event_base_loopexit()`, or an error occurs.
+
+When it is done, `event_base_loop()` returns 0 if it exited normally, -1 if it exited because of some unhandled error in the backend, and 1 if it exited because there were no more pending or active events.
+
+To aid in understanding, here's an approximate summary of the `event_base_loop` algorithm:
+
+```C
+while (any events are registered with the loop,
+	or EVLOOP_NO_EXIT_ON_EMPTY was set) {
+	
+	if (EVLOOP_NONBLOCK was set, or any events are already active)
+		If any registered events have triggered, mark them active.
+	else
+		Wait until at least one event has triggered, and mark it active.
+	
+	for (p = 0; p < n_priorities; ++p) {
+		if (any event with priority of p is active) {
+			Run all active events with priority of p.
+			break; /* Do not run any events of a less important priority */
+		}
+	}
+	
+	if (EVLOOP_ONCE was set or EVLOOP_NONBLOCK was set)
+		break;
+}
+```
