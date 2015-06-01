@@ -327,3 +327,24 @@ while (any events are registered with the loop,
 		break;
 }
 ```
+
+As a convenience, you can also call:
+
+```C
+int event_base_dispatch(struct event_base *base);
+```
+
+The `event_base_dispatch()` call is the same as `event_base_loop()`, with no flags set. Thus, it keeps running until there are no more registered events or until `event_base_loopbreak()` or `event_base_loopexit()` is called.
+
+##Stopping the loop
+If you want an active event loop to stop running before all events are removed from it, you have two slightly different functions you can call.
+
+```C
+int event_base_loopexit(struct event_base *base,
+			const struct timeval *tv);
+int event_base_loopbreak(struct event_base *base);
+```
+
+The `event_base_loopexit()` function tells an event_base to stop looping after a given time has elapsed. If the tv argument is NULL, the event_base stops looping without a delay. If the event_base is currently running callbacks for any active events, it will continue running them, and not exit until they have all been run.
+
+The `event_base_loopbreak()` function tells the event_base to exit its loop immediately. It differs from `event_base_loopexit(base, NULL)` in that if the event_base is currently running callbacks for any active events, it will exit immediately after finishing the one it's currently processing.
